@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%= render "head" %>
+</head>
+<body x-data="{
+  debug: false,
+  sql: false,
+  toggleAll(open) { document.querySelectorAll('details').forEach(d => d.open = open) }
+}" @keydown.window.meta.shift.d="debug = !debug">
+  <a href="<%= traces_path %>"><h1>Rails Trace Panel</h1></a>
+
+  <div style="margin-bottom: 1rem;">
+    <button @click="toggleAll(true)">Expand all</button>
+    <button @click="toggleAll(false)">Collapse all</button>
+    <button @click="sql = true">Show Sql</button>
+    <button @click="sql = false">Hide Sql</button>
+  </div>
+
+  <% if @traces.empty? %>
+    <p><em>No traces saved yet.</em></p>
+  <% else %>
+    <% @traces.each_with_index do |trace, idx| %>
+      <div class="trace">
+        <% trace.root_spans.sort_by(&:start).each do |span| %>
+          <%= render_span_tree(span, trace) %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</body>
+</html>

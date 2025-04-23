@@ -39,8 +39,7 @@ module RailsTracePanel
     end
 
     def children
-      trace.by_parent_id[span_id] || []
-      # trace.spans.select { _1.parent_id == span_id }
+      (trace.by_parent_id[span_id] || []).select { _1.duration > 0.0005 }
     end
 
     # def start_time

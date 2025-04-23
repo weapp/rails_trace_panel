@@ -1,8 +1,11 @@
 # RailsTracePanel::Store.clear
+require "sqlite3"
+require "json"
+require "securerandom"
 
 module RailsTracePanel
   class Store
-    DB_PATH = Rails.root.join("tmp", "rails_trace_panel.sqlite3").to_s
+    DB_PATH = nil
     TABLE_NAME = "traces"
 
     def self.db
@@ -22,7 +25,7 @@ module RailsTracePanel
     end
 
     def self.save_trace(trace)
-      return if trace.spans.count <= 2
+      # return if trace.spans.count <= 2
 
       spans = trace.respond_to?(:spans) ? trace.spans : Array(trace)
       trace_id = spans.first&.trace_id || SecureRandom.uuid
@@ -51,7 +54,7 @@ module RailsTracePanel
         filtered_spans = trace.spans.select do |span|
           next false if filters[:service] && span.service != filters[:service]
           next false if filters[:error] && span.status != 1
-          next false if filters[:min_duration] && (span.duration * 1000) < filters[:min_duration]
+          next false if filters[:min_duration] && (span.duration) < filters[:min_duration]
           if filters[:query]
             q = filters[:query].downcase
             hit = [span.name, span.resource, span.meta["http.url"]].compact.any? { _1.downcase.include?(q) rescue false }
@@ -77,7 +80,7 @@ module RailsTracePanel
         status: span.respond_to?(:status) ? span.status : nil,
         tags: span.respond_to?(:tags) ? span.tags : {},
         trace_id: span.trace_id,
-        start: span.start_time,
+        start: span.start_time.utc.iso8601(6),
         type: span.type,
         meta: span.meta || {},
         metrics: span.metrics || {},

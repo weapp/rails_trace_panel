@@ -1,0 +1,109 @@
+<style>
+  html, body, details, summary, ul, li { padding: 0; margin: 0; box-sizing: border-box; border: 0; font-size: 100%; }
+  body { font-family: sans-serif; margin: 20px; background-color: #f5f5f5; font-size: 14px; }
+  h1 { font-size: 24px; margin-bottom: 1rem; }
+  .trace {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: white;
+    display: block;
+    position: relative;
+  }
+  .error { color: red; }
+  li { list-style-type: none; margin-left: 0.1rem; position: relative; padding-left: 0.1rem; border-left: 1px solid #EEE; }
+  summary { cursor: pointer; display: flex; flex-direction: column; position: relative; margin: 0.5rem 0.1rem; padding: 0.5rem; }
+  .bar {
+    height: 2rem;
+    background-color: #4caf50;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    opacity: 0.25;
+    position: absolute;
+    z-index: 0;
+    inset: 2px;
+    left: 0;
+    top: 0;
+    height: 100%;
+  }
+  .span-header { display: inline-flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+  .service-tag { border-radius: 4px; font-size: 0.85rem; font-weight: bold; }
+  [x-cloak] { display: none; }
+  .bold { font-weight: 600; }
+  .name-tag { font-style: italic; }
+  .muted { color: #999; }
+  a { text-decoration: none; color: inherit; }
+  .alert {
+    padding: 1rem; margin: 1rem 0; border-radius: 4px;
+    background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
+  }
+  .sql {
+    border-left: 4px solid #EEE; padding: 1rem; margin: 1rem 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background-color: #f9f9f9;
+    width: 100%;
+    border: 1px solid #ccc;
+    font-family: monospace;
+  }
+
+  .sql-hl-keyword {
+    color: #005cc5; /* azul intenso */
+    font-weight: bold;
+  }
+
+  .sql-hl-function {
+    color: #d73a49; /* rojo suave */
+  }
+
+  .sql-hl-number {
+    color: #005cc5; /* azul */
+  }
+
+  .sql-hl-string {
+    color: #032f62; /* azul oscuro tirando a gris */
+    font-style: italic;
+  }
+
+  .sql-hl-special {
+    color: #6f42c1; /* púrpura */
+  }
+
+  .sql-hl-bracket {
+    color: #999; /* gris sutil */
+  }
+
+  .sql-hl-comment {
+    color: #6a737d; /* gris */
+    font-style: italic;
+    opacity: 0.9;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+
+<title>Rails Trace Panel</title>
+
+
+<script type="module">
+  import { highlight } from 'https://cdn.jsdelivr.net/npm/sql-highlight@6.0.0/+esm'
+
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Get all elements with the class 'sql'
+    const sqlElements = document.querySelectorAll('.sql');
+    console.log(sqlElements)
+
+    // Loop through each element
+    sqlElements.forEach((element) => {
+      // Get the text content of the element
+      const sqlString = element.textContent;
+
+      // Highlight the SQL string
+      const highlighted = highlight(sqlString, { html: true });
+
+      // Replace the content of the element with the highlighted SQL
+      element.innerHTML = highlighted;
+    });
+  });
+</script>

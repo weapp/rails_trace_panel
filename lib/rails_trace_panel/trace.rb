@@ -11,7 +11,11 @@ module RailsTracePanel
     end
 
     def root_spans
-      spans.reject { @by_id.include?(_1.parent_id) }
+      spans.reject { @by_id.include?(_1.parent_id) }.sort_by(&:start)
+    end
+
+    def root
+      @root ||= root_spans.first
     end
 
     # def print!
