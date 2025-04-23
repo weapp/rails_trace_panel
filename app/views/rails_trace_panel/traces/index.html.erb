@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rails Trace Panel</title>
+  <style>
+    html, body, details, summary, ul, li { padding: 0; margin: 0; }
+    body { font-family: sans-serif; margin: 20px; }
+    h1 { font-size: 24px; }
+    .trace { margin-bottom: 1rem; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; }
+    .error { color: red; }
+    li { list-style-type: none; }
+    [x-cloak] { display: none; }
+    .span-header { display: inline-flex; gap: 1rem; flex-direction: padding: 1rem; }
+  </style>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+</head>
+<body x-data="{ debug: false }" @keydown.window.meta.shift.d="debug = !debug">
+  <h1>Rails Trace Panel (SQLite)</h1>
+
+  <% if @traces.empty? %>
+    <p><em>No hay trazas guardadas aún.</em></p>
+  <% else %>
+    <% @traces.each_with_index do |trace, idx| %>
+      <div class="trace" style="background-color: <%= idx.even? ? '#f9f9f9' : '#fff' %>;">
+        <ul>
+          <% trace.root_spans.each_with_index do |span, span_idx| %>
+            <li>
+              <%= draw_span_tree(span) %>
+            </li>
+          <% end %>
+          <% if false #trace.each do |span| %>
+            <li style="margin-left: <%= span["parent_id"] ? 20 : 0 %>px;">
+              <strong><%= span["name"] %></strong> —
+              Servicio: <%= span["service"] %> —
+              Duración: <%= (span["duration"].to_f * 1000).round(1) %>ms
+              <% if span["status"] == 1 %>
+                <span class="error">[Error]</span>
+              <% end %>
+              <%= span.inspect %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  <% end %>
+</body>
+</html>
