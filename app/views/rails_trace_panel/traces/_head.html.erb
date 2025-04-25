@@ -13,13 +13,19 @@
   }
   .error { color: red; }
   li { list-style-type: none; margin-left: 0.1rem; position: relative; padding-left: 0.1rem; border-left: 1px solid #EEE; }
-  summary { cursor: pointer; display: flex; flex-direction: column; position: relative; margin: 0.5rem 0.1rem; padding: 0.5rem; }
+  summary {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin: 0.5rem 0.1rem;
+    padding: 0.5rem;
+  }
   .bar {
     height: 2rem;
     background-color: #4caf50;
     border-radius: 4px;
     margin-bottom: 0.5rem;
-    opacity: 0.25;
     position: absolute;
     z-index: 0;
     inset: 2px;
@@ -27,7 +33,14 @@
     top: 0;
     height: 100%;
   }
-  .span-header { display: inline-flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+  .span-header {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    z-index: 1;
+    position: relative;
+  }
   .service-tag { border-radius: 4px; font-size: 0.85rem; font-weight: bold; }
   [x-cloak] { display: none; }
   .bold { font-weight: 600; }

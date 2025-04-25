@@ -28,6 +28,10 @@ module RailsTracePanel
       @trace = trace
     end
 
+    def root?
+      trace.root_spans.include?(self)
+    end
+
     def to_s
       extras = []
       extras << "(s:#{service})"
@@ -39,7 +43,9 @@ module RailsTracePanel
     end
 
     def children
-      (trace.by_parent_id[span_id] || []).select { _1.duration > 0.0005 }
+      threshold = RailsTracePanel.configuration.min_span_duration_threshold
+
+      (trace.by_parent_id[span_id] || []).select { _1.duration > threshold }
     end
 
     # def start_time

@@ -20,10 +20,12 @@
     <p><em>No traces saved yet.</em></p>
   <% else %>
     <% @traces.each_with_index do |trace, idx| %>
-      <a class="trace" href="<%= trace_path(trace.id) %>">
+      <a class="trace" style="gap: 1rem; display: flex; flex-direction: column; padding: 0.5rem" href="<%= trace_path(trace.id) %>">
         <% trace.root_spans.each do |span| %>
-          <%= render_span_summary(span, trace) %>
-          <%= render_span_bar(span, 60) %>
+          <div style="position:relative; padding: 0.2rem 1rem;">
+            <%= render_span_bar(span, 30) %>
+            <%= render_span_summary(span, trace) %>
+          </div>
         <% end %>
       </a>
     <% end %>
