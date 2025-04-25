@@ -34,6 +34,9 @@ module RailsTracePanel
     end
 
     def self.save_trace(trace)
+      # Datadog::Tracing::Sampling::Ext::Priority::USER_KEEP
+      return if trace.sampling_priority == Datadog::Tracing::Sampling::Ext::Priority::USER_REJECT
+      # trace.sampling_priority
       return if trace.spans.count <= min_traces
 
       spans = trace.respond_to?(:spans) ? trace.spans : Array(trace)
@@ -46,7 +49,7 @@ module RailsTracePanel
       max_dur = durations.max
       count = spans.size
 
-      trace_id = trace.id || SecureRandom.uuid
+      trace_id = trace.id.to_s
       spans_array = spans.map { |s| span_to_h(s) }
       json = JSON.dump(spans_array)
       values = [
@@ -65,15 +68,35 @@ module RailsTracePanel
       Rails.logger.error("[rails_trace_panel] e.backtrace: #{e&.backtrace[0..0].join("\n")}")
     end
 
+    # def self.recent_traces(limit = 120, id: nil)
+    #   if id
+    #     db.execute("SELECT id, spans_json FROM #{TABLE_NAME} WHERE id = ?", [id]).map do |row|
+    #       Trace.new({id: row["id"], spans: JSON.parse(row["spans_json"])})
+    #     end
+    #   else
+    #     db.execute("SELECT id, spans_json FROM #{TABLE_NAME} ORDER BY id DESC LIMIT ?", [limit]).map do |row|
+    #       Trace.new({id: row["id"], spans: JSON.parse(row["spans_json"])})
+    #     end
+    #   end
+    # end
+
     def self.recent_traces(limit = 120, id: nil)
       if id
-        db.execute("SELECT id, spans_json FROM #{TABLE_NAME} WHERE id = ?", [id]).map do |row|
-          Trace.new({id: row["id"], spans: JSON.parse(row["spans_json"])})
-        end
+        rows = db.execute("SELECT id, trace_id, spans_json FROM #{TABLE_NAME} WHERE trace_id = ?", [id])
       else
-        db.execute("SELECT id, spans_json FROM #{TABLE_NAME} ORDER BY id DESC LIMIT ?", [limit]).map do |row|
-          Trace.new({id: row["id"], spans: JSON.parse(row["spans_json"])})
-        end
+        rows = db.execute("SELECT id, trace_id, spans_json FROM #{TABLE_NAME} ORDER BY created_at DESC LIMIT ?", [limit])
+      end
+
+      grouped = {}
+
+      rows.each do |row|
+        trace_id = row["trace_id"]
+        grouped[trace_id] ||= []
+        grouped[trace_id] += JSON.parse(row["spans_json"])
+      end
+
+      grouped.map do |trace_id, spans_array|
+        Trace.new({ id: trace_id, spans: spans_array })
       end
     end
 
