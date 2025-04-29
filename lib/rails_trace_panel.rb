@@ -7,11 +7,12 @@ require "rails_trace_panel/configuration"
 
 module RailsTracePanel
   class << self
-    attr_accessor :configuration
-
     def configure
-      self.configuration ||= Configuration.new
       yield(configuration)
+    end
+
+    def self.configuration
+      @configuration ||= Configuration.new
     end
   end
 end
