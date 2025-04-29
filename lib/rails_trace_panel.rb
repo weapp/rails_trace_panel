@@ -11,7 +11,7 @@ module RailsTracePanel
       yield(configuration)
     end
 
-    def self.configuration
+    def configuration
       @configuration ||= Configuration.new
     end
   end
